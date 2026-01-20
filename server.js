@@ -382,11 +382,13 @@ app.get('/api/admin/stats', async (req, res) => {
   }
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Opticon API running on http://localhost:${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/health`);
-  console.log(`Admin dashboard: http://localhost:${PORT}/admin`);
-});
+// Start server (only in non-serverless environment)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Opticon API running on http://localhost:${PORT}`);
+    console.log(`Health check: http://localhost:${PORT}/health`);
+    console.log(`Admin dashboard: http://localhost:${PORT}/admin`);
+  });
+}
 
 module.exports = app;

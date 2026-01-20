@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opticon - Automated Events Monitoring</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <h1>🔍 Opticon</h1>
+        <p class="tagline">Intelligent Event Monitoring for Your Business</p>
+      </div>
+    </header>
+
+    <!-- Progress Indicator -->
+    <div class="progress-bar">
+      <div class="progress-step active" data-step="1">
+        <div class="step-number">1</div>
+        <div class="step-label">Profile</div>
+      </div>
+      <div class="progress-step" data-step="2">
+        <div class="step-number">2</div>
+        <div class="step-label">Topics</div>
+      </div>
+      <div class="progress-step" data-step="3">
+        <div class="step-number">3</div>
+        <div class="step-label">Sources</div>
+      </div>
+      <div class="progress-step" data-step="4">
+        <div class="step-number">4</div>
+        <div class="step-label">Configure</div>
+      </div>
+      <div class="progress-step" data-step="5">
+        <div class="step-number">5</div>
+        <div class="step-label">Review</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Business Profile -->
+    <div id="step1" class="step active">
+      <h2>Tell us about your business</h2>
+      <p class="step-description">Help us understand what you do so we can recommend the best monitoring sources.</p>
+
+      <form id="profileForm">
+        <div class="form-group">
+          <label for="business_description">Business Description</label>
+          <textarea
+            id="business_description"
+            name="business_description"
+            rows="5"
+            placeholder="E.g., We're a Vancouver-based property management company managing 200+ residential units..."
+            required
+          ></textarea>
+          <div class="form-hint">Describe your business, industry, and what makes your company unique</div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="getTopicSuggestions">Continue →</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 2: Topic Selection -->
+    <div id="step2" class="step">
+      <h2>What would you like to monitor?</h2>
+      <p class="step-description">Select the topics most relevant to your business, or add your own.</p>
+
+      <div id="loadingTopics" class="loading">
+        <div class="spinner"></div>
+        <p>Analyzing your business and suggesting relevant topics...</p>
+      </div>
+
+      <div id="suggestedTopics" class="topics-grid"></div>
+
+      <div class="form-group" id="customTopicGroup" style="display:none;">
+        <label for="customTopic">Add Custom Topics</label>
+        <input type="text" id="customTopic" placeholder="Enter custom topic and press Enter">
+        <div class="selected-custom-topics" id="selectedCustomTopics"></div>
+      </div>
+
+      <div class="actions" id="topicActions" style="display:none;">
+        <button type="button" class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+        <button type="button" class="btn btn-primary" id="continueToSources">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Source Discovery -->
+    <div id="step3" class="step">
+      <h2>Review suggested sources</h2>
+      <p class="step-description">We've found these authoritative sources based on your topics. Select which ones to monitor.</p>
+
+      <div id="loadingSources" class="loading">
+        <div class="spinner"></div>
+        <p>Finding the best sources for your monitoring needs...</p>
+      </div>
+
+      <div id="sourcesList" class="sources-grid"></div>
+
+      <div class="form-group">
+        <label for="customSource">Add Custom Source</label>
+        <input type="url" id="customSourceUrl" placeholder="https://example.com">
+        <input type="text" id="customSourceName" placeholder="Source name">
+        <button type="button" class="btn btn-sm" id="addCustomSource">Add Source</button>
+      </div>
+
+      <div class="actions" id="sourceActions" style="display:none;">
+        <button type="button" class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+        <button type="button" class="btn btn-primary" id="continueToConfig">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Configuration -->
+    <div id="step4" class="step">
+      <h2>Configure your monitoring</h2>
+      <p class="step-description">Customize how and when you receive updates.</p>
+
+      <div class="config-grid">
+        <div class="config-section">
+          <h3>Update Frequency</h3>
+          <div class="radio-group">
+            <label class="radio-card">
+              <input type="radio" name="frequency" value="daily" checked>
+              <div class="radio-content">
+                <div class="radio-title">Daily</div>
+                <div class="radio-description">Get updates every day</div>
+                <div class="radio-multiplier">3x base price</div>
+              </div>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="frequency" value="weekly">
+              <div class="radio-content">
+                <div class="radio-title">Weekly</div>
+                <div class="radio-description">Weekly digest on Monday</div>
+                <div class="radio-multiplier">2x base price</div>
+              </div>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="frequency" value="monthly">
+              <div class="radio-content">
+                <div class="radio-title">Monthly</div>
+                <div class="radio-description">Monthly summary</div>
+                <div class="radio-multiplier">1x base price</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="config-section">
+          <h3>Delivery Method</h3>
+          <div class="radio-group">
+            <label class="radio-card">
+              <input type="radio" name="delivery" value="email" checked>
+              <div class="radio-content">
+                <div class="radio-title">Email</div>
+                <div class="radio-description">Delivered to your inbox</div>
+                <div class="radio-price">Free</div>
+              </div>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="delivery" value="dashboard">
+              <div class="radio-content">
+                <div class="radio-title">Dashboard</div>
+                <div class="radio-description">View in web dashboard</div>
+                <div class="radio-price">+$5/month</div>
+              </div>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="delivery" value="slack">
+              <div class="radio-content">
+                <div class="radio-title">Slack</div>
+                <div class="radio-description">Posted to Slack channel</div>
+                <div class="radio-price">+$10/month</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="config-section">
+          <h3>Relevance Filter</h3>
+          <div class="slider-group">
+            <label for="relevanceThreshold">Only show updates scoring:</label>
+            <input type="range" id="relevanceThreshold" min="1" max="10" value="5" step="1">
+            <div class="slider-labels">
+              <span>Show Everything (1)</span>
+              <span id="thresholdValue">5</span>
+              <span>Critical Only (10)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="config-section">
+          <h3>Competitor Tracking (Optional)</h3>
+          <input type="text" id="competitorNames" placeholder="Enter competitor names (comma separated)">
+          <button type="button" class="btn btn-sm" id="findCompetitors">Find Competitors</button>
+          <div id="competitorResults"></div>
+        </div>
+
+        <div class="config-section">
+          <h3>Keyword Alerts (Optional)</h3>
+          <input type="text" id="keywordAlerts" placeholder="lawsuit, acquisition, regulation (comma separated)">
+          <div class="form-hint">Get instant notifications for these keywords</div>
+        </div>
+      </div>
+
+      <!-- Pricing Calculator -->
+      <div class="pricing-card">
+        <h3>Your Plan</h3>
+        <div class="pricing-breakdown">
+          <div class="pricing-row">
+            <span>Base price</span>
+            <span id="priceBase">$10</span>
+          </div>
+          <div class="pricing-row">
+            <span>Frequency multiplier</span>
+            <span id="priceFrequency">×3</span>
+          </div>
+          <div class="pricing-row">
+            <span>Sources (<span id="sourcesCount">0</span> × $2)</span>
+            <span id="priceSources">$0</span>
+          </div>
+          <div class="pricing-row">
+            <span>Delivery</span>
+            <span id="priceDelivery">$0</span>
+          </div>
+          <div class="pricing-row pricing-total">
+            <span>Total per month</span>
+            <span id="priceTotal">$30</span>
+          </div>
+          <div class="pricing-row pricing-annual">
+            <span>Billed annually</span>
+            <span id="priceAnnual">$360</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
+        <button type="button" class="btn btn-primary" id="continueToReview">Review →</button>
+      </div>
+    </div>
+
+    <!-- Step 5: Review & Submit -->
+    <div id="step5" class="step">
+      <h2>Review your configuration</h2>
+      <p class="step-description">Everything look good? Submit to activate your monitoring.</p>
+
+      <div class="review-grid">
+        <div class="review-section">
+          <h3>Business Profile</h3>
+          <p id="reviewBusiness"></p>
+        </div>
+
+        <div class="review-section">
+          <h3>Monitoring Topics (<span id="reviewTopicsCount">0</span>)</h3>
+          <div id="reviewTopics" class="review-tags"></div>
+        </div>
+
+        <div class="review-section">
+          <h3>Sources (<span id="reviewSourcesCount">0</span>)</h3>
+          <div id="reviewSources" class="review-list"></div>
+        </div>
+
+        <div class="review-section">
+          <h3>Configuration</h3>
+          <ul class="review-details">
+            <li><strong>Frequency:</strong> <span id="reviewFrequency"></span></li>
+            <li><strong>Delivery:</strong> <span id="reviewDelivery"></span></li>
+            <li><strong>Relevance threshold:</strong> <span id="reviewThreshold"></span>/10</li>
+          </ul>
+        </div>
+
+        <div class="review-section pricing-final">
+          <h3>Your Plan</h3>
+          <div class="final-price">
+            <span class="price-amount" id="finalPrice">$30</span>
+            <span class="price-period">/month</span>
+          </div>
+          <p class="price-annual">$360 billed annually</p>
+        </div>
+      </div>
+
+      <div class="sample-preview">
+        <h3>Sample Update Preview</h3>
+        <div class="sample-update">
+          <div class="update-header">
+            <span class="update-date">Today, 9:30 AM</span>
+            <span class="update-score">Relevance: 8/10</span>
+          </div>
+          <h4>New Rental Regulation Announced in BC</h4>
+          <p>The BC government has announced new rental regulations affecting property managers...</p>
+          <div class="update-source">Source: BC Housing Authority</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" onclick="goToStep(4)">← Back</button>
+        <button type="button" class="btn btn-primary btn-large" id="submitProfile">Activate Monitoring</button>
+      </div>
+    </div>
+
+    <!-- Success Page -->
+    <div id="stepSuccess" class="step">
+      <div class="success-content">
+        <div class="success-icon">✓</div>
+        <h2>You're all set!</h2>
+        <p class="success-message">Your monitoring is now active. We'll start tracking your sources and send updates based on your preferences.</p>
+
+        <div class="success-details">
+          <div class="detail-card">
+            <strong>Your User ID</strong>
+            <p id="successUserId" class="user-id"></p>
+            <button type="button" class="btn btn-sm" id="copyUserId">Copy ID</button>
+          </div>
+
+          <div class="detail-card">
+            <strong>What happens next?</strong>
+            <ul>
+              <li>We're monitoring <span id="successSourceCount"></span> sources</li>
+              <li>Updates will be delivered <span id="successFrequency"></span></li>
+              <li>Only showing updates scoring <span id="successThreshold"></span>/10 or higher</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="viewDashboard">View Dashboard</button>
+          <button type="button" class="btn btn-secondary" onclick="location.reload()">Create Another Profile</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
