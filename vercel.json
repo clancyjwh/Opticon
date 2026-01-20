@@ -23,9 +23,5 @@
       "src": "/(.*)",
       "dest": "/server.js"
     }
-  ],
-  "env": {
-    "PERPLEXITY_API_KEY": "@perplexity-api-key",
-    "MAKECOM_WEBHOOK_URL": "@makecom-webhook-url"
-  }
+  ]
 }
