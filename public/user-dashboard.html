@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Opticon</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f7fa;
+    }
+
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      color: var(--white);
+      padding: 24px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .sidebar-user {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    .sidebar-user-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-user-email {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-menu-item {
+      margin-bottom: 8px;
+    }
+
+    .sidebar-menu-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: var(--white);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .sidebar-menu-link:hover,
+    .sidebar-menu-link.active {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar-stats {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .sidebar-logout {
+      margin-top: auto;
+      padding-top: 24px;
+    }
+
+    .btn-logout {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 8px;
+      color: var(--white);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Main Content */
+    .main-content {
+      padding: 32px;
+      max-width: 1400px;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .dashboard-title {
+      font-size: 2rem;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .btn-new-profile {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-new-profile:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Filters */
+    .filters-bar {
+      background: var(--white);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-bottom: 24px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 200px;
+    }
+
+    .filter-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+
+    .filter-input {
+      padding: 10px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+    }
+
+    .filter-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* Updates Feed */
+    .updates-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .update-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .update-card:hover {
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .update-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .update-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    .update-date {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .update-score {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .score-high {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .score-medium {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .score-low {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .update-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .update-content {
+      color: var(--text-light);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .update-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .update-source {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .update-source a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .update-source a:hover {
+      text-decoration: underline;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 24px;
+      opacity: 0.5;
+    }
+
+    .empty-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .empty-description {
+      color: var(--text-light);
+      line-height: 1.6;
+      max-width: 500px;
+      margin: 0 auto 24px;
+    }
+
+    /* Loading State */
+    .loading-container {
+      text-align: center;
+      padding: 60px;
+    }
+
+    .loading-spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">🔍 Opticon</div>
+
+      <div class="sidebar-user">
+        <div class="sidebar-user-name" id="userName">Loading...</div>
+        <div class="sidebar-user-email" id="userEmail">Loading...</div>
+      </div>
+
+      <nav>
+        <ul class="sidebar-menu">
+          <li class="sidebar-menu-item">
+            <a href="/dashboard" class="sidebar-menu-link active">
+              <span>📊</span>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="sidebar-menu-item">
+            <a href="/onboarding" class="sidebar-menu-link">
+              <span>➕</span>
+              <span>New Profile</span>
+            </a>
+          </li>
+          <li class="sidebar-menu-item">
+            <a href="/settings" class="sidebar-menu-link">
+              <span>⚙️</span>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-stats">
+        <div class="stat-item">
+          <div class="stat-label">Total Updates</div>
+          <div class="stat-value" id="totalUpdates">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">This Week</div>
+          <div class="stat-value" id="weekUpdates">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Active Sources</div>
+          <div class="stat-value" id="activeSources">0</div>
+        </div>
+      </div>
+
+      <div class="sidebar-logout">
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Your Updates</h1>
+        <a href="/onboarding" class="btn-new-profile">+ New Monitoring Profile</a>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-bar">
+        <div class="filter-group">
+          <label class="filter-label">Search</label>
+          <input type="text" id="searchInput" class="filter-input" placeholder="Search updates...">
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Source</label>
+          <select id="sourceFilter" class="filter-input">
+            <option value="">All Sources</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Min Relevance</label>
+          <select id="relevanceFilter" class="filter-input">
+            <option value="0">All (0+)</option>
+            <option value="5">Medium (5+)</option>
+            <option value="7">High (7+)</option>
+            <option value="9">Critical (9+)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Updates Container -->
+      <div id="updatesContainer"></div>
+    </main>
+  </div>
+
+  <script>
+    let currentUser = null;
+    let allUpdates = [];
+    let allSources = [];
+
+    // Check authentication on page load
+    async function checkAuth() {
+      try {
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          window.location.href = '/login';
+          return;
+        }
+
+        currentUser = await response.json();
+        document.getElementById('userName').textContent = currentUser.full_name;
+        document.getElementById('userEmail').textContent = currentUser.email;
+
+        // Load data
+        await loadUpdates();
+        await loadSources();
+
+      } catch (error) {
+        console.error('Auth error:', error);
+        window.location.href = '/login';
+      }
+    }
+
+    async function loadUpdates() {
+      const container = document.getElementById('updatesContainer');
+      container.innerHTML = '<div class="loading-container"><div class="loading-spinner"></div><p>Loading your updates...</p></div>';
+
+      try {
+        const response = await fetch('/api/user/updates', {
+          credentials: 'include'
+        });
+
+        if (!response.ok) throw new Error('Failed to load updates');
+
+        const data = await response.json();
+        allUpdates = data.updates || [];
+
+        document.getElementById('totalUpdates').textContent = allUpdates.length;
+
+        // Count this week
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        const weekCount = allUpdates.filter(u => new Date(u.created_at) > weekAgo).length;
+        document.getElementById('weekUpdates').textContent = weekCount;
+
+        displayUpdates(allUpdates);
+
+      } catch (error) {
+        console.error('Error loading updates:', error);
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Error Loading Updates</div><div class="empty-description">Please refresh the page to try again.</div></div>';
+      }
+    }
+
+    async function loadSources() {
+      try {
+        const response = await fetch('/api/user/sources', {
+          credentials: 'include'
+        });
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+        allSources = data.sources || [];
+
+        document.getElementById('activeSources').textContent = allSources.length;
+
+        // Populate source filter
+        const sourceFilter = document.getElementById('sourceFilter');
+        const uniqueSources = [...new Set(allUpdates.map(u => u.source_name).filter(Boolean))];
+
+        uniqueSources.forEach(source => {
+          const option = document.createElement('option');
+          option.value = source;
+          option.textContent = source;
+          sourceFilter.appendChild(option);
+        });
+
+      } catch (error) {
+        console.error('Error loading sources:', error);
+      }
+    }
+
+    function displayUpdates(updates) {
+      const container = document.getElementById('updatesContainer');
+
+      if (updates.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <div class="empty-title">No Updates Yet</div>
+            <div class="empty-description">
+              Your monitoring is active! Updates will appear here as we discover relevant events from your sources.
+              This usually takes 24-48 hours to start populating.
+            </div>
+            <a href="/onboarding" class="btn-new-profile" style="margin-top: 20px;">Create Your First Profile</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '<div class="updates-container"></div>';
+      const updatesContainer = container.querySelector('.updates-container');
+
+      updates.forEach(update => {
+        const scoreClass = update.relevance_score >= 8 ? 'score-high' :
+                          update.relevance_score >= 5 ? 'score-medium' : 'score-low';
+
+        const card = document.createElement('div');
+        card.className = 'update-card';
+        card.innerHTML = `
+          <div class="update-header">
+            <div class="update-meta">
+              <div class="update-date">
+                <span>📅</span>
+                <span>${new Date(update.created_at).toLocaleDateString()}</span>
+              </div>
+            </div>
+            <div class="update-score ${scoreClass}">
+              Relevance: ${update.relevance_score}/10
+            </div>
+          </div>
+
+          <div class="update-title">${update.title}</div>
+          <div class="update-content">${update.content || 'No additional content available.'}</div>
+
+          <div class="update-footer">
+            <div class="update-source">
+              <span>🔗</span>
+              ${update.source_url ?
+                `<a href="${update.source_url}" target="_blank">${update.source_name || 'View Source'}</a>` :
+                `<span>${update.source_name || 'Unknown Source'}</span>`
+              }
+            </div>
+          </div>
+        `;
+
+        updatesContainer.appendChild(card);
+      });
+    }
+
+    // Filter functionality
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+    document.getElementById('sourceFilter').addEventListener('change', applyFilters);
+    document.getElementById('relevanceFilter').addEventListener('change', applyFilters);
+
+    function applyFilters() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const source = document.getElementById('sourceFilter').value;
+      const minRelevance = parseInt(document.getElementById('relevanceFilter').value);
+
+      const filtered = allUpdates.filter(update => {
+        const matchesSearch = !search ||
+          update.title.toLowerCase().includes(search) ||
+          (update.content && update.content.toLowerCase().includes(search));
+
+        const matchesSource = !source || update.source_name === source;
+
+        const matchesRelevance = update.relevance_score >= minRelevance;
+
+        return matchesSearch && matchesSource && matchesRelevance;
+      });
+
+      displayUpdates(filtered);
+    }
+
+    async function logout() {
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include'
+        });
+        window.location.href = '/login';
+      } catch (error) {
+        console.error('Logout error:', error);
+        window.location.href = '/login';
+      }
+    }
+
+    // Initialize
+    checkAuth();
+  </script>
+</body>
+</html>

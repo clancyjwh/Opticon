@@ -1,0 +1,30 @@
+# Add after line 11 (after makeWebhook import):
+const { requireAuth } = require('./middleware/auth');
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
+
+# Add after line 27 (after express.static):
+app.use(cookieParser());
+
+# Add after line 32 (after '/' route):
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+app.get('/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'signup.html'));
+});
+
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'user-dashboard.html'));
+});
+
+app.get('/onboarding', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Mount auth routes
+app.use('/api/auth', authRoutes);
+
+// Mount user routes  
+app.use('/api/user', userRoutes);

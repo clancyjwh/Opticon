@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
 const { v4: uuidv4 } = require('uuid');
@@ -9,6 +10,11 @@ const { dbOperations } = require('./database');
 const perplexityService = require('./services/perplexity');
 const pricingService = require('./services/pricing');
 const makeWebhook = require('./services/make-webhook');
+const { requireAuth } = require('./middleware/auth');
+
+// Import routes
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,7 +26,8 @@ const limiter = rateLimit({
 });
 
 // Middleware
-app.use(cors());
+app.use(cors({ credentials: true, origin: true }));
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(limiter);
@@ -40,6 +47,31 @@ app.get('/', (req, res) => {
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
+
+// Serve auth pages
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+app.get('/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'signup.html'));
+});
+
+// Serve user dashboard
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'user-dashboard.html'));
+});
+
+// Serve onboarding as separate route
+app.get('/onboarding', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Mount auth routes
+app.use('/api/auth', authRoutes);
+
+// Mount user routes
+app.use('/api/user', userRoutes);
 
 // API: Suggest topics based on business description
 app.post('/api/suggest-topics', async (req, res) => {
